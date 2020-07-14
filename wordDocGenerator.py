@@ -4,19 +4,20 @@ from datetime import date
 import xlrd
 import xlwt
 import time
+import os
 
-
-
-def openExcelx(x):
+def openExcelx():
     import os.path
     import os
-    os.system("start EXCEL.EXE %s" %(x))
+    cwd = os.getcwd() + "\\templates\\interface.xlsm"
+    os.system('start EXCEL.EXE %s' %(cwd))
     input("Please input all your required information into the fields in the Excel Spreasheet.\nOnce completed please save and close EXCEL.\nPress Enter to generate Production Approval from EXCEL information.")
-    workbook = xlrd.open_workbook('%s' %(x))
-    worksheet = workbook.sheet_by_index(1)
+    return cwd
 
-def readExcelFile(x):
-    workbook = xlrd.open_workbook(x)
+x = cwd
+
+def readExcelFile(cwd):
+    workbook = xlrd.open_workbook(cwd)
     worksheet = workbook.sheet_by_index(1)
 
     partFullNameGen = worksheet.cell(4, 1).value
@@ -30,6 +31,5 @@ def readExcelFile(x):
     barrelCapacity = str(worksheet.cell(16, 1).value)
     return (barrelCapacity)
 
-
-openExcelx("D:\Documents\PythonProjects\wordDocGenerator\Component_Approval.xlsm")
-x = readExcelFile("D:\Documents\PythonProjects\wordDocGenerator\Component_Approval.xlsm")
+openExcelx()
+print(x)

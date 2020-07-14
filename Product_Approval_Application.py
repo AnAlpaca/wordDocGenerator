@@ -64,7 +64,7 @@ if worksheet.cell(5, 2).value != None:
 else:
     pass
 
-tablePartNameAndNumber = dict(zip(, colourPartName))
+
 
 # Start of the Merge Program
 # Define the templates - assumes they are in the same directory as the code
