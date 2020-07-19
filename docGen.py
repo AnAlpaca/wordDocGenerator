@@ -37,15 +37,35 @@ class DocGen:
     
     def read_excel_material(self):
         self.colours = []
-        for i in range(self.numColours + 1):
-            self.colours.append(self.worksheet.cell((8 + (5*i)), 3).value)
-    
+        self.partNumList = []
+        self.masterbatch = []
+        self.dosage= []
+        if self.worksheet.cell(7, 3).value == 1:
+            print("before for loop 1")
+            for i in range(self.numColours + 1):
+                self.colours.append(self.worksheet.cell((8 + (5*i)), 3).value)
+                self.partNumList.append(self.worksheet.cell((9 + (5*i)), 3).value)
+                self.masterbatch.append(self.worksheet.cell((10 + (5*i)), 3).value)
+                self.dosage.append(self.worksheet.cell((11 + (5*i)), 3).value)
+
+        elif self.worksheet.cell(7, 3).value == 0:
+            for i in range(self.numColours + 1):
+                self.colours.append(self.worksheet.cell((8 + (5*i)), 3).value)
+                self.masterbatch.append(self.worksheet.cell((10 + (5*i)), 3).value)
+                self.dosage.append(int(self.worksheet.cell((11 + (5*i)), 3).value)) 
+
+
+    def read_excel_quality(self):
+        self.image_splitline = self.worksheet.cell(9, 5).value
+
     def logic(self):
         n.read_excel_main()
         if self.worksheet.cell(5, 3).value == 1:
             n.read_excel_material()
+            print("problem here")
         else:
             pass
+        n.read_excel_quality()
 
     def worksheet_excel(self):
         workbook = xlrd.open_workbook(self.interface_path)
@@ -59,13 +79,10 @@ class DocGen:
                     self.worksheet = worksheet
                     n.logic()
         except Exception:
-            pass
-    
+            pass    
     
    
 n = DocGen("HPC")
 n.open_excel()
 n.worksheet_excel()
-print(n.worksheet.cell(8, 3).value)
-print(n.colours)
-
+print(n.image_splitline)
