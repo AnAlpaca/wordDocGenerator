@@ -41,28 +41,49 @@ class DocGen:
         self.masterbatch = []
         self.dosage= []
         if self.worksheet.cell(7, 3).value == 1:
-            print("before for loop 1")
-            for i in range(self.numColours + 1):
+            for i in range(self.numColours):
                 self.colours.append(self.worksheet.cell((8 + (5*i)), 3).value)
                 self.partNumList.append(self.worksheet.cell((9 + (5*i)), 3).value)
                 self.masterbatch.append(self.worksheet.cell((10 + (5*i)), 3).value)
                 self.dosage.append(self.worksheet.cell((11 + (5*i)), 3).value)
 
         elif self.worksheet.cell(7, 3).value == 0:
-            for i in range(self.numColours + 1):
+            for i in range(self.numColours):
                 self.colours.append(self.worksheet.cell((8 + (5*i)), 3).value)
                 self.masterbatch.append(self.worksheet.cell((10 + (5*i)), 3).value)
                 self.dosage.append(int(self.worksheet.cell((11 + (5*i)), 3).value)) 
 
 
     def read_excel_quality(self):
-        self.image_splitline = self.worksheet.cell(9, 5).value
+        if self.worksheet.cell(9, 5).value == None:
+            self.image_splitline = "Image not chosen."
+        else:
+            self.image_splitline = self.worksheet.cell(9, 5).value
+
+        if self.worksheet.cell(14, 5).value == None:
+            self.image_sink = "Image not chosen."
+        else:
+            self.image_sink = self.worksheet.cell(14, 5).value
+
+        if self.worksheet.cell(19, 5).value == None:
+            self.image_gate = "Image not chosen."
+        else:
+            self.image_gate = self.worksheet.cell(19, 5).value
+
+        if self.worksheet.cell(24, 5).value == None:
+            self.image_contamination = "Image not chosen."
+        else:
+            self.image_contamination = self.worksheet.cell(24, 5).value
+
+        if self.worksheet.cell(29, 5).value == None:
+            self.image_flow = "Image not chosen."
+        else:
+            self.image_flow = self.worksheet.cell(29, 5).value    
 
     def logic(self):
         n.read_excel_main()
         if self.worksheet.cell(5, 3).value == 1:
             n.read_excel_material()
-            print("problem here")
         else:
             pass
         n.read_excel_quality()
