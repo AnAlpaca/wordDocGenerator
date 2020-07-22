@@ -35,6 +35,40 @@ class DocGen:
         for i in range(19, 19 + self.numTools):
             self.tools.append(self.worksheet.cell(i, 1).value)
     
+    def mailMerge_Main(self):
+        self.template_main = "hpc_main.docx"
+        #self.dir_path + "\\templates\\hpc_main.docx"
+        self.main_doc_name = 'PA - ' + self.partDesc +'.docx'
+        mergeMain = MailMerge(self.template_main)
+        
+        documentVariablesSet = mergeMain.get_merge_fields()
+        documentVariablesList = list(documentVariablesSet)
+        lengthlist = len(documentVariablesList)
+        print('The following variables are used in the Word Templates', documentVariablesList)
+
+        mergeMain.merge(
+            PartFullName = self.partDesc,
+            PartNumber= self.partNum,
+            SupplierName= self.supplier,
+            AuthorName = self.author,
+            PartShortName = self.partName,
+            MachineClampForce = str(int(self.machForce)),
+            BarrelCapacity = str(int(self.barrelCap)),
+            RevNo = "1",
+            IntroductionProduct = "Endless Summer is launching a new PPE half face mask known as the NAUTILUS PPE. Following successful moulding trials, the below component is approved for production subject to the below parameters, procedures and processes."
+            )
+        print("we got here")
+        # define the name of the directory to be created
+        path = self.dir_path + "\\output\hpc\\" + self.partDesc + "\\" + self.partDesc
+
+        try:
+         os.makedirs(path)
+        except OSError:
+            print ("Creation of the directory %s already exists or has failed" % path)
+        else:
+            print ("Successfully created the new directorys %s" % path)
+        mergeMain.write(path + "\\" + self.main_doc_name)
+
     def read_excel_material(self):
         self.colours = []
         self.partNumList = []
@@ -55,38 +89,43 @@ class DocGen:
 
 
     def read_excel_quality(self):
-        if self.worksheet.cell(9, 5).value == None:
+        if self.worksheet.cell(9, 5).value == "":
             self.image_splitline = "Image not chosen."
         else:
             self.image_splitline = self.worksheet.cell(9, 5).value
 
-        if self.worksheet.cell(14, 5).value == None:
+        if self.worksheet.cell(14, 5).value == "":
             self.image_sink = "Image not chosen."
         else:
             self.image_sink = self.worksheet.cell(14, 5).value
 
-        if self.worksheet.cell(19, 5).value == None:
+        if self.worksheet.cell(19, 5).value == "":
             self.image_gate = "Image not chosen."
         else:
             self.image_gate = self.worksheet.cell(19, 5).value
 
-        if self.worksheet.cell(24, 5).value == None:
+        if self.worksheet.cell(24, 5).value == "":
             self.image_contamination = "Image not chosen."
         else:
             self.image_contamination = self.worksheet.cell(24, 5).value
 
-        if self.worksheet.cell(29, 5).value == None:
+        if self.worksheet.cell(29, 5).value == "":
             self.image_flow = "Image not chosen."
         else:
             self.image_flow = self.worksheet.cell(29, 5).value    
 
     def logic(self):
         n.read_excel_main()
+        n.mailMerge_Main()
         if self.worksheet.cell(5, 3).value == 1:
             n.read_excel_material()
         else:
             pass
-        n.read_excel_quality()
+        if self.worksheet.cell(5, 5).value == 1:
+            n.read_excel_quality()
+        else:
+            pass
+        
 
     def worksheet_excel(self):
         workbook = xlrd.open_workbook(self.interface_path)
@@ -106,4 +145,3 @@ class DocGen:
 n = DocGen("HPC")
 n.open_excel()
 n.worksheet_excel()
-print(n.image_splitline)
