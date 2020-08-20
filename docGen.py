@@ -4,8 +4,10 @@ import xlwt
 import time
 import os
 import os.path
+import re
 from mailmerge import MailMerge
 from datetime import date
+from docx import Document
 class DocGen:
     
     def __init__(self, partType):
@@ -20,6 +22,7 @@ class DocGen:
         os.system('start EXCEL.EXE %s' %(self.interface_path))
         input("Please input all your required information into the fields in the Excel Spreasheet.\nOnce completed please save and close EXCEL.\nPress Enter to generate Production Approval from EXCEL information.")
     
+
     def read_excel_main(self):
         self.partDesc = self.worksheet.cell(6, 1).value
         self.partNum = self.worksheet.cell(7, 1).value
@@ -68,6 +71,62 @@ class DocGen:
         else:
             print ("Successfully created the new directorys %s" % path)
         mergeMain.write(path + "\\" + self.main_doc_name)
+
+    def docx_replace_regex(self, regex , replace):
+        regex1 = re.compile(r"your regex")
+        replace1 = r"your replace string"
+        filename = self.dir_path + "\\hpc_main.docx"
+        self.doc = Document(filename)
+        
+
+        for p in self.doc.paragraphs:
+            if regex.search(p.text):
+                inline = p.runs
+                # Loop added to work with runs (strings with same style)
+                for i in range(len(inline)):
+                    if regex.search(inline[i].text):
+                        text = regex.sub(replace, inline[i].text)
+                        inline[i].text = text
+
+        for table in self.doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                            for p in self.doc.paragraphs:
+                                if regex.search(p.text):
+                                    inline = p.runs
+                                    # Loop added to work with runs (strings with same style)
+                                    for i in range(len(inline)):
+                                        if regex.search(inline[i].text):
+                                            text = regex.sub(replace, inline[i].text)
+                                            inline[i].text = text
+        
+        self.doc.save('result1.docx')
+
+    def docx_replace_regex2(self, regex , replace):
+        filename = self.dir_path + "\\hpc_main.docx"
+        doc = Document(filename)
+
+        Dictionary = {"production": "funny", "find_this_text":"new_text"}
+        for i in Dictionary:
+            for p in doc.paragraphs:
+                if p.text.find(i)>=0:
+                    p.text=p.text.replace(i,Dictionary[i])
+
+        for i in Dictionary:
+            for p in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for p in cell.paragraphs:
+                            if regex.search(p.text):
+                                inline = p.runs
+                                # Loop added to work with runs (strings with same style)
+                                for i in range(len(inline)):
+                                    if regex.search(inline[i].text):
+                                        text = regex.sub(replace, inline[i].text)
+                                        inline[i].text = text
+        
+        #save changed document
+        self.doc.save('test.docx')
 
     def read_excel_material(self):
         self.colours = []
@@ -143,5 +202,6 @@ class DocGen:
     
    
 n = DocGen("HPC")
-n.open_excel()
-n.worksheet_excel()
+
+n.docx_replace_regex2("production", "funny")
+
